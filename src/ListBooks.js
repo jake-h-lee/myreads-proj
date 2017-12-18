@@ -1,46 +1,29 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import escapeRegExp from 'escape-string-regexp'
-import sortBy from 'sort-by'
-import * as BooksAPI from './BooksAPI'
+
 
 
 class ListBooks extends Component {
 
   static propTypes = {
     books: PropTypes.array.isRequired,
-    onBookStatusChange: PropTypes.func.isRequired
+    onBookUpdate: PropTypes.func.isRequired
 
   }
 
   state = {
-    query: ''
+    book : ''
   }
 
-  onBookStatusChange = () => {
+  doSomething = () => {
+    console.log("Did Something")
 
-  }
-
-  updateQuery = (query) => {
-    this.setState({ query: query.trim() })
-  }
-
-  clearQuery = () => {
-    this.setState({ query: '' })
   }
 
   render(){
-    const {books, onBookStatusChange} = this.props
-    const {query} = this.state
+    const {books, bookshelves, onBookUpdate} = this.props
 
-    let showingBooks
-    if(query){
-      const match = new RegExp(escapeRegExp(query, 'i'))
-      showingBooks = books.filter((book) => match.test(book.title))
-    }else {
-      showingBooks = books
-    }
 
     return (
       <div className="list-books">
@@ -49,35 +32,40 @@ class ListBooks extends Component {
         </div>
         <div className="list-books-content">
           <div>
-            <div className="bookshelf">
-              <h2 className="bookshelf-title">Currently Reading</h2>
-              <div className="bookshelf-books">
-                <ol className="books-grid">
-                  {books.map((book) => (
-                    <li key={book.id}>
-                      <div className="book">
-                        <div className="book-top">
-                          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url('+book.imageLinks.smallThumbnail+')' }}></div>
-                          <div className="book-shelf-changer">
-                            <select>
-                              <option value="none" disabled>Move to...</option>
-                              <option value="currentlyReading">Currently Reading</option>
-                              <option value="wantToRead">Want to Read</option>
-                              <option value="read">Read</option>
-                              <option value="none">None</option>
-                            </select>
+            {bookshelves.map((shelf) => (
+              <div key={shelf} className="bookshelf">
+                <h2 className="bookshelf-title">{shelf[1]}</h2>
+                <div className="bookshelf-books">
+                  <ol className="books-grid">
+                    {books.filter((book) => (book.shelf === shelf[0])).map((book) => (
+                      <li key={book.id}>
+                        <div className="book">
+                          <div className="book-top">
+                            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url('+book.imageLinks.smallThumbnail+')' }}></div>
+                            <div className="book-shelf-changer">
+                              <select onChange={console.log("Did something")} defaultValue={shelf[0]}>
+                                <option value="none" disabled>Move to...</option>
+                                {bookshelves.map((s) => (
+                                  <option key={s[0]} value={s[0]} >{s[1]}</option>
+                                ))}
+                                <option value="none">None</option>
+                              </select>
+                            </div>
                           </div>
+                          <div className="book-title">{book.title}</div>
+                          {book.authors.map((author, index) => (
+                            <div key={index} className="book-authors">{author}</div>
+                          ))}
                         </div>
-                        <div className="book-title">{book.title}</div>
-                        {book.authors.map((author, index) => (
-                          <div key={index} className="book-authors">{author}</div>
-                        ))}
-                      </div>
-                    </li>
-                  ))}
-                </ol>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
+          <div className="open-search">
+            <Link to="/search">Add a book</Link>
           </div>
         </div>
       </div>
