@@ -15,29 +15,40 @@ class BooksApp extends Component {
     ]
   }
 
-  componentDidMount(){
+  componentWillMount(){
     BooksAPI.getAll().then((books) => {
       this.setState({books})
     })
   }
 
-  removeBook = (book) => {
-    this.setState((state) => ({
-      books: state.books.filter((b) => b.id !== book.id)
-    }))
-    BooksAPI.remove(book)
+
+  updateBook = (id, shelf) => {
+    BooksAPI.get(id).then((book) => {
+      BooksAPI.update(book, shelf).then((res) => {
+        BooksAPI.getAll().then((books) => {
+          this.setState({books})
+        })
+      })
+    })
   }
 
-  updateBook = (book) => {
-    console.log(book)
-  }
-
-  addBook = (book) => {
-
+  findDefaultValue = (id) => {
+    for(var i=0, books = this.state.books; i<books.length; i++){
+      if(books[i].id === id){
+        return books[i].shelf
+      }
+    }
+    return 'none'
   }
 
   render() {
     const {books, bookshelves} = this.state
+
+    if(books){
+      BooksAPI.getAll().then((books) => {
+        this.setState({books})
+      })
+    }
 
     return (
       <div className="app">
@@ -54,7 +65,7 @@ class BooksApp extends Component {
           <SearchBooks
             bookshelves={bookshelves}
             onBookUpdate={this.updateBook}
-            onBookAdd={this.addBook}
+            getDefaultValue={this.findDefaultValue}
           />
         )}/>
 

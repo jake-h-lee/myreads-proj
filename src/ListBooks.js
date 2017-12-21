@@ -2,25 +2,13 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-
-
 class ListBooks extends Component {
 
   static propTypes = {
     books: PropTypes.array.isRequired,
     onBookUpdate: PropTypes.func.isRequired
-
   }
-
-  state = {
-    book : ''
-  }
-
-  doSomething = () => {
-    console.log("Did Something")
-
-  }
-
+  
   render(){
     const {books, bookshelves, onBookUpdate} = this.props
 
@@ -43,7 +31,13 @@ class ListBooks extends Component {
                           <div className="book-top">
                             <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url('+book.imageLinks.smallThumbnail+')' }}></div>
                             <div className="book-shelf-changer">
-                              <select onChange={console.log("Did something")} defaultValue={shelf[0]}>
+                              <select
+                                onChange={(event) => (
+                                  onBookUpdate(book.id, event.target.value)
+                                  )
+                                }
+                                defaultValue={shelf[0]}
+                              >
                                 <option value="none" disabled>Move to...</option>
                                 {bookshelves.map((s) => (
                                   <option key={s[0]} value={s[0]} >{s[1]}</option>
