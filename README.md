@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # MyReads Project
 
 This application will show off some of the core concepts for developing in React as part of the Udacity Nanodegree course.
